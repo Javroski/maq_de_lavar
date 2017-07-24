@@ -12,7 +12,8 @@ entity maq_de_lavar is
 end maq_de_lavar;
 
 architecture etapas of maq_de_lavar is
-	type estado is (enchimento1, enchimento2, enchimento3, enchimento4, enchimento5, enchimento6, enchimento7, enchimento8,
+	type estado is (ligado,
+						 enchimento1, enchimento2, enchimento3, enchimento4, enchimento5, enchimento6, enchimento7, enchimento8,
 						 agitacao1, agitacao2, agitacao3, agitacao4, agitacao5, agitacao6,
 						 pausa1, pausa2, pausa3, pausa4, pausa5, pausa6, pausa7, pausa8, pausa9, pausa10, 
 						 lavagem1, lavagem2, lavagem3, lavagem4, lavagem5, lavagem6, lavagem7,lavagem8, 
@@ -20,68 +21,81 @@ architecture etapas of maq_de_lavar is
 	signal atual, futuro : estado;
 begin
 	process(clock,reset)
-	begin
-		variable gerador_tempo =	integer	range 0 to 4999999; -- ([20MHZ ^ -1] *5.000.000 = 0,25s). Como eh vereficado a cada borda de subida(2 ciclos de onda), 0,25 * 2 = 0,5s
 	
+	variable gerador_tempo :	integer	range 0 to 4999999; -- ([20MHZ ^ -1] *5.000.000 = 0,25s). Como eh vereficado a cada borda de subida(2 ciclos de onda), 0,25 * 2 = 0,5s
+	
+	begin
 		if(reset = '1')	then
-			atual <= enchimento1;
+			atual <= ligado;
 		elsif(clock'event and clock = '1')	then
-			atual <= futuro;
-			gerador_tempo += 1;
+			if(gerador_tempo = 4999999)	then
+				atual <= futuro;
+			end if;
 		end if;
 	end process;
 	
 	process(atual)
 	begin
 		case atual is
+			when ligado =>
+					led20 <= '1';
+					futuro <= enchimento1;
+				
 			when enchimento1 =>
-				if (gerador_tempo = 0) then
-					
+					led21	<= '1';
+					led17 <= '1';
+					led20 <= '0';
+					led8	<= '1';
 					futuro <= enchimento2;
-				end if;
 			
 			when enchimento2 =>
-				if (gerador_tempo = 0) then
-					
+					led7 	<= '1';
 					futuro <= enchimento3;
-				end if;
 				
 			when enchimento3 =>
-				if (gerador_tempo = 0) then
-					
+					led6 	<= '1';
 					futuro <= enchimento4;
-				end if;
 				
 			when enchimento4 =>
-				if (gerador_tempo = 0) then
-					
+					led5 	<= '1';
 					futuro <= enchimento5;
-				end if;
 				
 			when enchimento5 =>
-				if (gerador_tempo = 0) then
-					
+					led4 	<= '1';
 					futuro <= enchimento6;
-				end if;
 				
 			when enchimento6 =>
-				if (gerador_tempo = 0) then
-					
+					led3 	<= '1';
 					futuro <= enchimento7;
-				end if;
 			
 			when enchimento7 =>
-				if (gerador_tempo = 0) then
-					
+					led2 	<= '1';
 					futuro <= enchimento8;
-				end if;
 			
 			when enchimento8 =>
-				if (gerador_tempo = 0) then
-					
+					led1 	<= '1';
+					led18 <= '1';
+					led17 <= '0';
 					futuro <= agitacao1;
-				end if;
-		
+			
+			when agitacao1 =>
+					led21 <= '0';
+					led22	<= '1';
+					led26	<= '1';
+					led10 <= '1';
+					futuro <= agitacao2;
+			
+			when agitacao2 =>
+					
+			when agitacao3 =>
+			
+			when agitacao4 =>
+			
+			when agitacao5 =>
+			
+			when agitacao6 =>
+			
+			
 		end case;
 	end process;
 end etapas;
