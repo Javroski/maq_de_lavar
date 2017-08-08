@@ -14,7 +14,7 @@ end maq_de_lavar;
 architecture etapas of maq_de_lavar is
 	type estado is (ligado,
 						 enchimento1, enchimento2, enchimento3, enchimento4, enchimento5, enchimento6, enchimento7, enchimento8,
-						 agitacao1, agitacao2, agitacao3, agitacao4, agitacao5, agitacao6,
+						 agitacao1, agitacao2, agitacao3, agitacao4, agitacao5, agitacao6, agitacao7
 						 pausa1, pausa2, pausa3, pausa4, pausa5, pausa6, pausa7, pausa8, pausa9, pausa10, 
 						 lavagem1, lavagem2, lavagem3, lavagem4, lavagem5, lavagem6, lavagem7,lavagem8, 
 						 centrifugacao1);
@@ -28,6 +28,7 @@ begin
 		if(reset = '1')	then
 			atual <= ligado;
 		elsif(clock'event and clock = '1')	then
+			gerador_tempo := gerador_tempo + 1;
 			if(gerador_tempo = 4999999)	then
 				atual <= futuro;
 			end if;
@@ -38,13 +39,13 @@ begin
 	begin
 		case atual is
 			when ligado =>
-					led20 <= '1';
+					led10 <= '1';
 					futuro <= enchimento1;
 				
 			when enchimento1 =>
 					led21	<= '1';
-					led17 <= '1';
-					led20 <= '0';
+					led11 <= '1';
+					led10 <= '0';
 					led8	<= '1';
 					futuro <= enchimento2;
 			
@@ -74,27 +75,46 @@ begin
 			
 			when enchimento8 =>
 					led1 	<= '1';
-					led18 <= '1';
-					led17 <= '0';
+					led9  <= '1';
+					led11 <= '0';
 					futuro <= agitacao1;
 			
 			when agitacao1 =>
 					led21 <= '0';
 					led22	<= '1';
-					led26	<= '1';
-					led10 <= '1';
+					led23	<= '1';
+					led14 <= '1';
 					futuro <= agitacao2;
 			
 			when agitacao2 =>
+					led14 <= '0';
+					led15 <= '1';
+					futuro <= agitacao3;
 					
 			when agitacao3 =>
+					led15 <= '0';
+					led16 <= '1';
+					futuro <= agitacao4;
 			
 			when agitacao4 =>
+					led16 <= '0';
+					led17 <= '1';
+					futuro <= agitacao5;
 			
 			when agitacao5 =>
+					led17 <= '0';
+					led18 <= '1';
+					futuro <= agitacao6;
 			
 			when agitacao6 =>
+					led18 <= '0';
+					led19 <= '1';
+					fututo <= agitacao7;
 			
+			when agitacao7 =>
+					led19 <= '0';
+					led20 <= '1';
+					futuro <= pausa1;
 			
 		end case;
 	end process;
