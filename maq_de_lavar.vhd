@@ -15,7 +15,7 @@ architecture etapas of maq_de_lavar is
 	type estado is (ligado,
 						 enchimento1, enchimento2, enchimento3, enchimento4, enchimento5, enchimento6, enchimento7, enchimento8,
 						 agitacao1, agitacao2, agitacao3, agitacao4, agitacao5, agitacao6, agitacao7
-						 pausa1, pausa2, pausa3, pausa4, pausa5, pausa6, pausa7, pausa8, pausa9, pausa10, 
+						 pausa, 
 						 lavagem1, lavagem2, lavagem3, lavagem4, lavagem5, lavagem6, lavagem7,lavagem8, 
 						 centrifugacao1);
 	signal atual, futuro : estado;
@@ -23,7 +23,8 @@ begin
 	process(clock,reset)
 	
 	variable gerador_tempo :	integer	range 0 to 4999999; -- ([20MHZ ^ -1] *5.000.000 = 0,25s). Como eh vereficado a cada borda de subida(2 ciclos de onda), 0,25 * 2 = 0,5s
-	
+				t_pausa	: integer range 0 to 19;
+				n_lavagem	:	integer range 0 to 4;
 	begin
 		if(reset = '1')	then
 			atual <= ligado;
@@ -114,8 +115,56 @@ begin
 			when agitacao7 =>
 					led19 <= '0';
 					led20 <= '1';
-					futuro <= pausa1;
+					futuro <= pausa;
 			
+			when pausa =>
+					led23 <= '0';
+					led24 <= '1';
+					if(t_pausa = 19)	then
+						futuro <= lavagem1;
+					end if;
+					t_pausa := t_pausa + 1;
+			
+			when lavagem1 =>
+					led24 <= '0';
+					led25 <= '1';
+					if(n_lavagem = 0 or n_lavagem = 2 or n_lavagem = 4)	then
+						led20 <= '0';
+						led19 <= '1';
+						n_lavagem := n_lavagem + 1;
+						futuro <= lavagem2;
+					end if;
+					
+					elsif(n_lavagem = 1 or n_lavagem = 3)	then
+						led14 <= '0';
+						n_lavagem := n_lavagem + 1;
+					end if;
+					
+			when lavagem2 =>
+					led19 <= '0';
+					led18 <= '1';
+					futuro <= lavagem3;
+					
+			when lavagem3 =>
+					led18 <= '0';
+					led17 <= '1';
+					futuro <= lavagem4;
+					
+			when lavagem4 =>
+					led17 <= '0';
+					led16 <= '1';
+					futuro <= lavagem5;
+					
+			when lavagem5 =>
+					led16 <= '0';
+					led15 <= '1';
+					futuro <= lavagem6;
+					
+			when lavagem6 =>
+					led15 <= '0';
+					led14 <= '1';
+					futuro <= lavagem1;
+					
 		end case;
 	end process;
 end etapas;
